@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+{% block head %}
+{% endblock head %}
+<title>Sekreterya Yazılımı</title>
+</head>
+{% include "includes/navbar.html" %}
+{% include "includes/messages.html" %}
+<body style="background-color:#f5f5f5;">
+
+{% block divofcontainer %}
+<div class="container">
+
+
+{% block body %}
+LAYOUT PAGE
+{% endblock body %}
+
+</div>
+{% endblock divofcontainer %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" ></script>
+{% block js %}
+    
+{% endblock  %}
+</body>
+</html>
+<!--KULLANICI SİSTEMİ TAMAMDIR
+müşterilerin kaydını tutacak,anlık arama sonuçlarını listeleyecek TAMAMDIR
+firma ekleme TAMAMDIR, görev ekleme ve listeleme işlemleri yapılacak. 
+listeleme işlemleri en hızlı şekilde çalışması gerektiği için tablo yapını ona göre hazırlaman gerekecek.
+takvim : örneğin bugünün tarihini otomatik alıp listeleme yapılması gerekiyor. Yine kullanıcının gireceği tarihe göre görevler listelenmesi gerekiyor.
+
+Görevler kategorize edilecek mesela yapıldı,askıda,iptal şeklinde
+
+kullanıcı erişmek istediği işleme anında erişim sağlayabilecek. bu konuda modal(booststrap terimidir, bu konuda bilgin yoksa modal olayını es geçebilirsin) kullanabilirsin.-->

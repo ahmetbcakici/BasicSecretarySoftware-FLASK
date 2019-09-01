@@ -1,0 +1,280 @@
+{% extends "layout.html" %}
+{% block head %}
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+div#secretarytaskbox{
+  background-color: lightgrey;
+  width:250px;
+  padding-top:20px; 
+  padding-bottom:20px;
+}
+
+table tr td:nth-child(6){
+  display:none;}
+/*table tr th:nth-child(5){
+  display:none;
+}*/
+
+</style>
+{% endblock head %}
+{% block divofcontainer %}
+{% block body %}
+<div style="width: 100%; overflow: hidden;margin-left:185px;">  
+  <div id="secretarytaskbox" style="width: 350px; float: left;" >
+    <a style="font-size:30px;">&emsp;&emsp;Görevler</a><br>
+    <input type="date" id="date" style="width:160px;margin-left:50px;" onchange="getObject(this);"><br>
+    <!--<label id="today" style="font-size:15px;">Bugün</label>-->
+    <hr>
+    <ul id="tasks"></ul>
+    <button style="float:right;margin-right:50px;" id="addnewtask">+Görev ekle</button>
+  </div>
+  <div style="margin-left:400px;width:50%">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-default">Firma Ara:</span>
+      </div>
+      <input id="searchbox" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+    <table >
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Firma</th>
+          <th>Telefon</th>
+          <th>Adres</th>
+          <th>Müşteri</th>
+          <th id="commentcolumn">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody id="companies">    
+      </tbody>
+    </table>      
+    <!-- The Modal -->
+    <div class="modal" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Firma Kayıt Formu</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <form action='' method='post' id='form'>
+            <!-- Modal Body-->
+            <div class="modal-body mx-3">
+              <div class="md-form mb-5">
+                <i class="fas fa-user prefix grey-text"></i>
+                <input type="text" id="form34" class="form-control validate">
+                <label data-error="wrong" data-success="right" for="form34">Firma Adı</label>
+              </div>
+            <div class="md-form mb-5">
+                <i class="fas fa-envelope prefix grey-text"></i>
+                <input type="text" id="form29" class="form-control validate">
+                <label data-error="wrong" data-success="right" for="form29">Firma Telefonu</label>
+              </div>
+            <div class="md-form mb-5">
+                <i class="fas fa-tag prefix grey-text"></i>
+                <input type="text" id="form32" class="form-control validate">
+                <label data-error="wrong" data-success="right" for="form32">Firma Adresi</label>
+              </div>
+            <div class="md-form mb-5">
+                <i class="fas fa-tag prefix grey-text"></i>
+                <input type="text" id="form31" class="form-control validate">
+                <label data-error="wrong" data-success="right" for="form32">Müşteri Adı</label>
+              </div>
+            <div class="md-form">
+                <i class="fas fa-pencil prefix grey-text"></i>
+                <textarea type="text" id="form8" class="md-textarea form-control" rows="4"></textarea>
+                <label data-error="wrong" data-success="right" for="form8">Açıklama</label>
+              </div>
+            </div>
+            <!-- Modal footer -->              
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger"  data-dismiss="modal" id="deletecompany">Kaydı Sil</button>
+              <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+              <input type="submit"  class="btn btn-primary" value="Tamam">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <input type="button" id = "addcompany" class="btn btn-success" data-toggle="modal" data-target="#myModal" style="float: right;" value='Firma Ekle'>
+  </div>
+</div>
+{% endblock body %}
+{% endblock divofcontainer %}
+{% block js %}
+<script type="text/javascript">
+var idforupdate = 0;
+var clickcount = 0;
+var taskcolor = "";
+function getObject(object){gettasksbydate(object);}
+function gettasksbydate(object){
+  $.ajax({
+    method:"post",
+    url:"/taskdate",
+    data:{selecteddate:object.value},
+    success:function(response){
+      $("ul#tasks").html(response);
+    }
+  });
+}
+function getcurrentdate(){
+  var d = new Date();
+  var day = d.getDate();
+  var month = d.getMonth() + 1;
+  var year = d.getFullYear();
+  if (month < 10) month = "0" + month;
+  if (day < 10) day = "0" + day;
+  var today = year + "-" + month + "-" + day;
+  $("input#date").attr("value", today);
+}
+function selectdata(){
+  $("tbody#companies").html("");
+  $.ajax({
+    method:"get",
+    url:"/selectcompany",
+    success:function(response){      
+      $("tbody#companies").append(response);
+
+      /*$('tbody#companies tr').each(function(){
+        $(this).children('td:eq(5)').hide();
+      });*/
+
+      //$("thead tr th:eq(4)").hide();
+      //$("thead tr th:eq(5)").css({'display':'none'});
+
+    }
+  });
+}
+$(function(){  
+  $(document).on("mouseenter","#taskbullet",function(){
+    jQuery(this).css("cursor", "pointer");
+    jQuery(this).mousedown(function(e){ e.preventDefault(); });
+
+  });
+  $(document).on("click","span#taskbullet",function(){
+    ++clickcount;
+    if(clickcount == 1){
+      $(this).css("color","red");
+      taskcolor = "red";
+    }
+    else if(clickcount == 2){
+      $(this).css("color","green");
+      taskcolor = "green";
+    }
+    else if(clickcount == 3){
+      $(this).css("color","#F7FF00");
+      taskcolor = "#F7FF00";
+      clickcount = 0;
+    }
+    $.ajax({
+      method:"post",
+      url:"/updatetaskcolor",
+      data:{taskcolor:taskcolor,task:$(this).parent().text().substring(2,)}
+    });
+  });
+  $(document).on("mouseleave","#taskbullet",function(){
+    clickcount = 0;
+  });
+  selectdata();
+  gettasksbydate("");
+  getcurrentdate();
+  $("th#commentcolumn").mouseenter(function(){
+    //$("thead tr td:eq(4)").hide();
+    //$("thead tr td:eq(3)").css({'display':'none'});
+    $('tbody#companies tr').each(function(){
+      $(this).children('td:eq(5)').show();
+    });
+
+  });
+  $("tbody#companies").mouseleave(function(){
+    $('tbody#companies tr').each(function(){
+      $(this).children('td:eq(5)').hide();
+    });
+  });
+  $("button#addnewtask").click(function(){
+    $("ul#tasks").append("<li id='addtask'><input type='text' id='addtask'></li>");
+  });
+  $("input#addcompany").click(function(){
+    $("#form").trigger("reset");    
+    $("h4.modal-title").text("Firma Kayıt Formu");
+    $("button#deletecompany").hide();
+    idforupdate = 0;
+  });
+  $("button#deletecompany").click(function(){
+    $.post("/deletecompany",{company_id:idforupdate});
+    selectdata();
+  });
+  $("tbody#companies").on("dblclick", "td", function () {
+    var table = document.getElementById('companies');
+    idforupdate = table.rows[$(this).closest("tr").index()].cells[0].innerHTML;
+    $("#form34").val(table.rows[$(this).closest("tr").index()].cells[1].innerHTML);
+    $("#form29").val(table.rows[$(this).closest("tr").index()].cells[2].innerHTML);
+    $("#form32").val(table.rows[$(this).closest("tr").index()].cells[3].innerHTML);
+    $("#form31").val(table.rows[$(this).closest("tr").index()].cells[4].innerHTML);
+    $("#form8").val(table.rows[$(this).closest("tr").index()].cells[5].innerHTML);
+    $("h4.modal-title").text("Firma Güncelleme Formu");
+    $("button#deletecompany").show();
+    $("#myModal").modal("show");    
+    forupdate = true;
+  });
+  $(document).on("keyup","input#addtask",function(e){
+    if (e.keyCode === 13){
+      datetaskentered = $("input#date").val();
+      taskentered = $(this).val();
+      $("li#addtask").remove();
+      $.ajax({
+        method:"post",
+        url:"/insertdate",
+        data:{datetaskentered:datetaskentered,taskentered:taskentered},
+        success:function(response){
+          $("ul#tasks").html(response);
+        }
+      });
+    }
+  });
+  $("form#form").submit(function(){
+    var data = {
+      company_id:idforupdate,
+      company_name:$("#form34").val(),
+      company_phone:$("#form29").val(),
+      company_address:$("#form32").val(),
+      customer_name:$("#form31").val(),
+      comment:$("#form8").val() 
+    }
+    $.post("/aboutcompany",data, function(response){
+      if (response){
+        selectdata();
+        $("#myModal").modal("hide");
+        $("#form").trigger("reset");
+      }
+    });        
+    return false;
+    });
+  var searchbox = "";
+  $("input#searchbox").on("keyup", function() {
+    searchbox = $(this).val();
+    $.ajax({
+      method:"post",
+      url:"/livesearch",
+      data:{searchbox:searchbox},
+      success : function(response){
+        $("tbody#companies").html(response);
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
